@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GFGC Retail Customer Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .page { display: none; }
+        .page.active { display: block; }
+        .loader {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* FAQ Accordion styles */
+        .faq-question.open svg {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div id="app" class="max-w-6xl mx-auto p-4 md:p-8">
+        <header id="main-header" class="flex items-center justify-between pb-8">
+            <div>
+                <img src="data:image/jpeg;base64,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" alt="Greenfinch Global Consulting Logo" class="h-10 md:h-12 cursor-pointer object-contain" onclick="showPage('landing-page')">
+            </div>
+            <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-600">
+                <a href="#how-it-works" class="hover:text-cyan-600">How it Works</a>
+                <a href="#services" class="hover:text-cyan-600">Services</a>
+                <a href="#pricing" class="hover:text-cyan-600">Pricing</a>
+                <a href="#faq" class="hover:text-cyan-600">FAQ</a>
+                <a href="#contact" class="hover:text-cyan-600">Contact Us</a>
+            </nav>
+            <div>
+                 <button onclick="showPage('auth-page')" class="hidden lg:inline-block bg-cyan-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-cyan-700 transition-colors text-sm">
+                    Get Started
+                </button>
+                 <button id="home-button" class="hidden text-sm font-medium text-cyan-600 hover:text-cyan-800 transition-colors">Home</button>
+            </div>
+        </header>
+
+        <div id="landing-page" class="page active space-y-16 md:space-y-24">
+            
+            <section class="grid md:grid-cols-2 items-center gap-8 md:gap-16 pt-8">
+                <div class="text-center md:text-left">
+                    <h1 class="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">Online Property Verification Made Easy</h1>
+                    <p class="mt-4 text-slate-600">Verify property documents & conduct legal checks quickly and accurately. Get peace of mind with our expert-led services.</p>
+                    <button onclick="startJourney('legal')" class="mt-8 bg-cyan-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-cyan-700 transition-transform transform hover:scale-105">
+                        Get Started
+                    </button>
+                </div>
+                <div class="relative">
+                     <div class="absolute -inset-2 bg-gradient-to-br from-cyan-100 to-blue-200 rounded-2xl opacity-50 blur-xl"></div>
+                     <div class="relative bg-white p-4 rounded-2xl shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=600&h=400&auto=format&fit=crop" alt="Illustration of a person with a house and checklist" class="rounded-xl w-full h-full object-cover">
+                    </div>
+                </div>
+            </section>
+
+            <section id="risk-report" class="grid md:grid-cols-2 items-center gap-8 md:gap-16">
+                <div class="text-left">
+                    <h2 class="text-3xl font-bold text-slate-900">Greenfinch Property Risk Report</h2>
+                    <p class="mt-4 text-slate-600">Get all relevant historical records of the property, the patta and a simplified legal summary.</p>
+                    <ul class="mt-6 space-y-3">
+                        <li class="flex items-center text-slate-700">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 mr-3 text-green-500"></i>
+                            <span>Greenfinch Property risk Score</span>
+                        </li>
+                        <li class="flex items-center text-slate-700">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 mr-3 text-green-500"></i>
+                            <span>Encumbrance Certificates</span>
+                        </li>
+                        <li class="flex items-center text-slate-700">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 mr-3 text-green-500"></i>
+                            <span>Legal Opinion report</span>
+                        </li>
+                        <li class="flex items-center text-slate-700">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 mr-3 text-green-500"></i>
+                            <span>CERSAI Report</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="relative">
+                    <div class="absolute -inset-2 bg-gradient-to-br from-purple-100 to-cyan-100 rounded-2xl opacity-50 blur-xl"></div>
+                    <div class="relative bg-white p-4 rounded-2xl shadow-lg">
+                         <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAJ3BDgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1VZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A/NPxH4i1bxdr1/rWu6hdarrOqXEl5e315K0s1xNIxZ5HdiSzMxJJJ5JNc/Z2dzqN5DaWdvNdXVxIsUUMKF3kdiAqoo5JJIAAHJNfoT+xf+yN4J+IHwb8ffGr4uaT4q1j4b+Apre1vNP8I3sVlfR+cVDySSSxyqqrujACqTkseMV6x8JdJ/Yl+LvxT+Hvwo8IfCf40eDfiB8QNas/C9h4l8Q+KLe5+w3V3IsCuYo7JTsDOpOGOQDjPSgD86vHngPxP8LfF2peFPGeg6j4Z8TaTKIL7StVtXtri3kwG2vG4DKcMDyOhFZVfaH/BRjxF8GvFfx88Qat8K/hd4v+GN3bancW3iSDxL4iTVJ77UfNJkuoWW3h8pWXaSuX5LcHjHgX7M3wVv/2ivjx4L+Gmm7lm8TatBYyyL1jiduZG/wCAoGbj0oA86or9b9D+Cn7Fnhb9tzT/ANl69/Z68U+NNY1rxbFoMPinUvHGoWsVraPK6eb9mhA85kXaxBkj6MM8V4z/AMFM/Avwg+GX7RHiLwL8LPhrd/DyLwjqFxpOqx33iC51aXUriOTc1yGuPkQEYG1Dj6dQD5LooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD7g/4JD6D4b8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ACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/9k=" alt="Sample of a Greenfinch Property Risk Report" class="rounded-xl w-full h-full object-cover">
+                    </div>
+                </div>
+            </section>
+
+            <section id="services" class="text-center">
+                 <h2 class="text-3xl font-bold text-slate-900">Our Services</h2>
+                 <p class="max-w-2xl mx-auto mt-2 text-slate-600">Comprehensive solutions for all your property verification needs.</p>
+                 <div class="grid md:grid-cols-2 gap-8 mt-12">
+                     <div class="bg-white p-8 rounded-xl shadow-lg text-left cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl" onclick="showPage('auth-page')">
+                        <div class="bg-cyan-100 text-cyan-600 p-3 rounded-full inline-block">
+                             <i data-lucide="building-2" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="mt-4 text-xl font-semibold">Technical Evaluation</h3>
+                        <p class="mt-2 text-slate-500">A complete on-site assessment of the property's condition, compliance with building norms, and valuation.</p>
+                     </div>
+                     <div class="bg-white p-8 rounded-xl shadow-lg text-left cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl" onclick="startJourney('legal')">
+                        <div class="bg-cyan-100 text-cyan-600 p-3 rounded-full inline-block">
+                            <i data-lucide="scale" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="mt-4 text-xl font-semibold">Legal Verification</h3>
+                        <p class="mt-2 text-slate-500">Thorough and confidential check of property documents and legal history to ensure a clear title.</p>
+                     </div>
+                 </div>
+            </section>
+
+            <section id="how-it-works" class="text-center">
+                <h2 class="text-3xl font-bold text-slate-900">How it Works</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-slate-600">A simple, transparent process to secure your property investment.</p>
+                <div class="grid md:grid-cols-3 gap-8 md:gap-12 mt-12">
+                    <div class="flex flex-col items-center">
+                        <div class="bg-cyan-100 text-cyan-600 p-4 rounded-full">
+                            <i data-lucide="globe-2" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="mt-4 text-xl font-semibold">1. Select State</h3>
+                        <p class="mt-2 text-slate-500">Choose the state where your property is located to start the process.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-cyan-100 text-cyan-600 p-4 rounded-full">
+                            <i data-lucide="file-up" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="mt-4 text-xl font-semibold">2. Provide Details</h3>
+                        <p class="mt-2 text-slate-500">Enter property details and upload documents through our secure portal.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bg-cyan-100 text-cyan-600 p-4 rounded-full">
+                            <i data-lucide="file-text" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="mt-4 text-xl font-semibold">3. Get Report</h3>
+                        <p class="mt-2 text-slate-500">Receive a detailed report with findings and recommendations.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="pricing" class="text-center">
+                <h2 class="text-3xl font-bold text-slate-900">Pricing</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-slate-600">Transparent pricing for complete peace of mind.</p>
+                <div class="grid lg:grid-cols-3 gap-8 mt-12 items-start">
+                    <div class="bg-white p-8 rounded-xl shadow-lg border h-full flex flex-col">
+                        <h3 class="text-xl font-semibold text-slate-800">Property Checklist</h3>
+                        <p class="mt-4 text-5xl font-bold">Free</p>
+                        <p class="text-slate-500 mt-2">A basic checklist to get you started.</p>
+                        <ul class="mt-6 text-slate-600 space-y-2 text-left flex-grow">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Essential document list</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Basic verification points</li>
+                        </ul>
+                        <button class="mt-8 w-full bg-slate-200 text-slate-800 font-bold py-3 px-8 rounded-lg hover:bg-slate-300 transition-colors">
+                            Download Now
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-xl shadow-lg border h-full flex flex-col">
+                        <h3 class="text-xl font-semibold text-slate-800">Legal Verification</h3>
+                        <p class="mt-4 text-4xl font-bold text-slate-900">Starts at <span class="text-5xl">₹1000</span></p>
+                        <p class="text-slate-500 mt-2">+ 18% GST</p>
+                         <ul class="mt-6 text-slate-600 space-y-2 text-left flex-grow">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Title Deed Check</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Encumbrance Certificate Review</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Property Tax History</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Detailed Legal Report</li>
+                        </ul>
+                        <button onclick="startJourney('legal')" class="mt-8 w-full bg-cyan-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-cyan-700 transition-colors">
+                            Get Started
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-xl shadow-lg border h-full flex flex-col">
+                        <h3 class="text-xl font-semibold text-slate-800">Technical Evaluation</h3>
+                        <p class="mt-4 text-4xl font-bold text-slate-900">Starts at <span class="text-5xl">₹1000</span></p>
+                        <p class="text-slate-500 mt-2">+ 18% GST</p>
+                        <ul class="mt-6 text-slate-600 space-y-2 text-left flex-grow">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>On-site property assessment</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Building plan compliance check</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Property valuation</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500"></i>Detailed Technical Report</li>
+                        </ul>
+                        <button onclick="showPage('auth-page')" class="mt-8 w-full bg-cyan-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-cyan-700 transition-colors">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="faq">
+                <h2 class="text-3xl font-bold text-slate-900 text-center">Frequently Asked Questions</h2>
+                <div class="mt-12 max-w-3xl mx-auto space-y-4">
+                    <div class="faq-item bg-white rounded-lg shadow-md">
+                        <button class="faq-question flex justify-between items-center w-full p-5 text-left font-semibold">
+                            What documents are required?
+                            <i data-lucide="chevron-down" class="transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden p-5 pt-0 text-slate-600">
+                            For a "Non-Digital" state, document requirements vary by service. Aadhaar is needed for Deed Execution, while Aadhaar and PAN are needed for a CERSAI Report. For "Digital" states, you might only need the document number and year to begin.
+                        </div>
+                    </div>
+                    <div class="faq-item bg-white rounded-lg shadow-md">
+                        <button class="faq-question flex justify-between items-center w-full p-5 text-left font-semibold">
+                            How long does the verification process take?
+                            <i data-lucide="chevron-down" class="transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden p-5 pt-0 text-slate-600">
+                           The delivery time depends on your state. For "Digital" states, the report is typically sent within 24 hours. For "Non-Digital" states, it takes 48-72 hours.
+                        </div>
+                    </div>
+                    <div class="faq-item bg-white rounded-lg shadow-md">
+                         <button class="faq-question flex justify-between items-center w-full p-5 text-left font-semibold">
+                            Is my information secure?
+                            <i data-lucide="chevron-down" class="transition-transform"></i>
+                        </button>
+                        <div class="faq-answer hidden p-5 pt-0 text-slate-600">
+                            Absolutely. We use industry-standard encryption and security protocols to protect your personal information and documents. Your privacy is our top priority.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="text-center bg-white p-8 md:p-12 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-900">Contact Us</h2>
+                <p class="max-w-2xl mx-auto mt-2 text-slate-600">Have questions? Get in touch with our team.</p>
+                <form class="mt-8 max-w-xl mx-auto space-y-4">
+                    <input type="text" placeholder="Your Name" class="w-full input-field">
+                    <input type="email" placeholder="Your Email" class="w-full input-field">
+                    <textarea placeholder="Your Message" rows="4" class="w-full input-field"></textarea>
+                    <button type="submit" class="w-full bg-cyan-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-cyan-700 transition-colors">
+                        Send Message
+                    </button>
+                </form>
+            </section>
+        </div>
+
+        <div id="state-selection-page" class="page"></div>
+        
+        <div id="digital-details-page" class="page"></div>
+
+        <div id="review-details-page" class="page"></div>
+
+        <div id="auth-page" class="page"></div>
+
+        <div id="booking-page" class="page"></div>
+
+        <div id="payment-page" class="page"></div>
+
+        <div id="confirmation-page" class="page"></div>
+        
+        <div id="status-inquiry-page" class="page"></div>
+        
+        <div id="status-display-page" class="page"></div>
+        
+        <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
+            <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+        </div>
+        
+        <footer class="text-center mt-12 pt-8 border-t border-slate-200">
+            <p class="text-sm text-slate-500">&copy; 2025 Greenfinch Global Consulting Pvt. Ltd. All rights reserved.</p>
+        </footer>
+
+    </div>
+
+<script>
+    lucide.createIcons();
+
+    // --- DATA STORE ---
+    const stateData = {
+        "Andhra Pradesh": "Digital", "Bihar": "Digital", "Chhattisgarh": "Digital", "Delhi": "Digital", "Gujarat": "Digital", "Haryana": "Digital",
+        "Himachal Pradesh": "Digital", "Jharkhand": "Digital", "Karnataka": "Digital", "Kerala": "Digital", "Madhya Pradesh": "Digital",
+        "Maharashtra": "Digital", "Odisha": "Digital", "Puducherry": "Digital", "Rajasthan": "Digital", "Tamil Nadu": "Digital", "Telangana": "Digital",
+        "Uttar Pradesh": "Digital", "Uttarakhand": "Digital", "West Bengal": "Digital",
+        "Assam": "Non-Digital", "Goa": "Non-Digital", "Jammu & Kashmir": "Non-Digital", "Punjab": "Non-Digital", "Tripura": "Non-Digital"
+    };
+
+    const serviceData = {
+        legal: [
+            { name: 'Property Title Verification', price: 1500, description: 'Comprehensive check of property ownership and legal history.' },
+            { name: 'Legal Opinion Report', price: 2000, description: 'Get a written opinion from a legal expert on property matters.' },
+            { 
+              name: 'Deed Execution',
+              variablePrice: true,
+              options: [
+                { label: 'Property value up to ₹10 Lac', price: 2500 },
+                { label: 'Property value ₹10 Lac - ₹25 Lac', price: 5000 },
+                { label: 'Property value ₹25 Lac - ₹50 Lac', price: 10000 },
+                { label: 'Property value ₹50 Lac & above', price: 15000 }
+              ],
+              description: 'Assistance with drafting and execution of sale or lease deeds.'
+            },
+            { name: 'CERSAI Report', price: 1000, description: 'Check for charges or security interests on a property.' }
+        ]
+    };
+
+    const appState = {
+        currentPage: 'landing-page',
+        pageHistory: [],
+        selectedServices: [],
+        totalPrice: 0,
+        caseRef: '',
+        selectedState: '',
+        stateStatus: '',
+        customerDetails: {},
+        mockStatus: {}
+    };
+    
+    // --- PAGE CONTENT POPULATION ---
+    function populatePages() {
+        document.getElementById('state-selection-page').innerHTML = `
+            <div class="bg-white p-8 rounded-xl shadow-md max-w-lg mx-auto">
+                <h2 class="text-2xl font-bold mb-2 text-slate-900">Legal Verification</h2>
+                <p class="text-slate-600 mb-8">Please select the state where the property is located.</p>
+                <div>
+                    <label for="state-dropdown" class="block text-sm font-medium text-slate-700">State</label>
+                    <select id="state-dropdown" class="mt-1 block w-full input-field">
+                        <option value="" disabled selected>-- Select a State --</option>
+                    </select>
+                </div>
+                <button onclick="handleStateSelection()" class="w-full mt-6 bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700">Proceed</button>
+                <button onclick="goBack()" class="w-full mt-2 bg-slate-200 text-slate-800 font-bold py-3 px-6 rounded-lg hover:bg-slate-300">Back</button>
+            </div>`;
+
+        const stateDropdown = document.getElementById('state-dropdown');
+        Object.keys(stateData).sort().forEach(state => {
+            stateDropdown.insertAdjacentHTML('beforeend', `<option value="${state}">${state}</option>`);
+        });
+
+        document.getElementById('digital-details-page').innerHTML = `
+            <div class="bg-white p-8 rounded-xl shadow-md">
+                 <button onclick="goBack()" class="text-sm text-cyan-600 hover:text-cyan-800 mb-4 inline-flex items-center"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Services</button>
+                <h2 class="text-2xl font-bold mb-2 text-slate-900">Property Details</h2>
+                <p class="text-slate-600 mb-8">Enter the following details for digital verification.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label for="digital-state" class="block text-sm font-medium text-slate-700">State</label><input type="text" id="digital-state" class="mt-1 block w-full input-field bg-slate-100" readonly></div>
+                    <div><label for="digital-mobile" class="block text-sm font-medium text-slate-700">Mobile Number</label><input type="tel" id="digital-mobile" class="mt-1 block w-full input-field" placeholder="10-digit number" maxlength="10"><p class="error-msg"></p></div>
+                    <div class="md:col-span-2"><label for="digital-email" class="block text-sm font-medium text-slate-700">Email ID</label><input type="email" id="digital-email" class="mt-1 block w-full input-field" placeholder="you@example.com"><p class="error-msg"></p></div>
+                    <div><label for="digital-doc-number" class="block text-sm font-medium text-slate-700">Document Number</label><input type="text" id="digital-doc-number" class="mt-1 block w-full input-field"><p class="error-msg"></p></div>
+                    <div><label for="digital-doc-year" class="block text-sm font-medium text-slate-700">Document Year</label><input type="text" id="digital-doc-year" class="mt-1 block w-full input-field" placeholder="YYYY" maxlength="4"><p class="error-msg"></p></div>
+                    <div class="md:col-span-2"><label for="digital-sro" class="block text-sm font-medium text-slate-700">SRO (Sub-Registrar Office)</label><input type="text" id="digital-sro" class="mt-1 block w-full input-field"><p class="error-msg"></p></div>
+                    <div class="md:col-span-2"><label for="digital-village" class="block text-sm font-medium text-slate-700">Village Name</label><input type="text" id="digital-village" class="mt-1 block w-full input-field"><p class="error-msg"></p></div>
+                </div>
+                <button onclick="goToReview()" class="mt-8 w-full bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700">Review Details</button>
+            </div>`;
+
+        document.getElementById('review-details-page').innerHTML = `
+            <div class="bg-white p-8 rounded-xl shadow-md">
+                <h2 class="text-2xl font-bold mb-6 text-slate-900">Confirm Your Details</h2>
+                <div class="space-y-4">
+                    <div id="review-content" class="text-slate-700 bg-slate-50 p-4 rounded-lg"></div>
+                    <div id="review-services" class="text-slate-700 bg-slate-50 p-4 rounded-lg"></div>
+                </div>
+                <div class="flex flex-col md:flex-row gap-4 justify-center mt-8">
+                    <button onclick="goBack()" class="bg-slate-100 text-slate-800 font-bold py-3 px-6 rounded-lg hover:bg-slate-200 w-full md:w-auto">Back & Edit Details</button>
+                    <button onclick="goToPaymentFromReview()" class="bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700 w-full md:w-auto">Confirm & Proceed</button>
+                </div>
+            </div>`;
+        
+        document.getElementById('booking-page').innerHTML = `
+            <div class="bg-white p-8 rounded-xl shadow-md">
+                <button onclick="goBack()" class="text-sm text-cyan-600 hover:text-cyan-800 mb-4 inline-flex items-center"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to State Selection</button>
+                <h2 class="text-2xl font-bold mb-2 text-slate-900">Book Your Service</h2>
+                <p id="booking-subtitle" class="text-slate-600 mb-8">Select services and provide your details.</p>
+                <div id="service-selection-section">
+                    <h3 class="text-lg font-semibold border-b pb-2 mb-4">1. Select Services</h3>
+                    <div id="service-list-container" class="space-y-4"></div>
+                     <div class="mt-6 p-4 bg-slate-50 rounded-lg flex justify-between items-center">
+                        <span class="font-bold text-lg">Total Amount:</span>
+                        <span id="total-price" class="font-bold text-lg text-cyan-700">₹0</span>
+                    </div>
+                </div>
+                <div id="non-digital-form-container">
+                    <div id="customer-info-section" class="mt-8 hidden">
+                         <h3 class="text-lg font-semibold border-b pb-2 mb-4">2. Your Information</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="full-name" class="block text-sm font-medium text-slate-700">Full Name</label><input type="text" id="full-name" class="mt-1 block w-full input-field"><p class="error-msg"></p></div>
+                            <div><label for="auth-mobile-number" class="block text-sm font-medium text-slate-700">Mobile Number</label><input type="tel" id="auth-mobile-number" class="mt-1 block w-full input-field" placeholder="Enter 10-digit number" maxlength="10"><p class="error-msg"></p></div>
+                            <div id="aadhaar-field-container" class="hidden"><label for="aadhaar-number" class="block text-sm font-medium text-slate-700">Aadhaar Number</label><input type="text" id="aadhaar-number" class="mt-1 block w-full input-field" placeholder="12-digit number"><p class="error-msg"></p></div>
+                            <div id="pan-field-container" class="hidden"><label for="pan-card" class="block text-sm font-medium text-slate-700">PAN Card</label><input type="text" id="pan-card" class="mt-1 block w-full input-field" placeholder="Alphanumeric format"><p class="error-msg"></p></div>
+                            <div class="md:col-span-2"><label for="address" class="block text-sm font-medium text-slate-700">Complete Address</label><textarea id="address" rows="3" class="mt-1 block w-full input-field"></textarea><p class="error-msg"></p></div>
+                            <div><label for="pincode" class="block text-sm font-medium text-slate-700">Pincode</label><input type="text" id="pincode" class="mt-1 block w-full input-field" placeholder="6-digit pincode"><p class="error-msg"></p></div>
+                         </div>
+                    </div>
+                    <div id="document-upload-section" class="mt-8 hidden">
+                         <h3 class="text-lg font-semibold border-b pb-2 mb-4">3. Upload Property Deed</h3>
+                         <p class="text-sm text-slate-500 -mt-3 mb-4">(This could be a Sale Deed, Gift Deed, or Partition Deed)</p>
+                         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md">
+                            <div class="space-y-1 text-center">
+                                <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                <div class="flex text-sm text-slate-600"><label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-cyan-600 hover:text-cyan-500"><span>Upload your Property Deed</span><input id="file-upload" name="file-upload" type="file" class="sr-only" multiple onchange="displayUploadedFiles(this)"></label><p class="pl-1">or drag and drop</p></div>
+                                <p class="text-xs text-slate-500">PDF, PNG, JPG up to 5MB</p>
+                            </div>
+                        </div>
+                        <div id="file-list" class="mt-4 space-y-2"></div>
+                    </div>
+                </div>
+                <button id="proceed-to-details-btn" onclick="proceedToDetails()" class="hidden mt-8 w-full bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700">Save & Next</button>
+             </div>`;
+        
+        document.getElementById('payment-page').innerHTML = `
+            <div class="bg-white p-8 rounded-xl shadow-md">
+                 <button onclick="goBack()" class="text-sm text-cyan-600 hover:text-cyan-800 mb-6 inline-flex items-center"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back</button>
+                 <h2 class="text-2xl font-bold mb-8 text-slate-900">Payment</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold border-b pb-2 mb-4">Order Summary</h3>
+                        <div id="order-summary-list" class="space-y-2 text-slate-600"></div>
+                        <div class="border-t mt-4 pt-4 space-y-2">
+                           <div class="flex justify-between"><span>Subtotal</span><span id="summary-subtotal"></span></div>
+                           <div class="flex justify-between"><span>GST (18%)</span><span id="summary-gst"></span></div>
+                           <div class="flex justify-between font-bold text-slate-800 text-lg"><span>Total Payable</span><span id="summary-total"></span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold border-b pb-2 mb-4">Select Payment Method</h3>
+                        <div class="space-y-3">
+                           <label class="flex items-center p-4 border rounded-lg has-[:checked]:bg-cyan-50 has-[:checked]:border-cyan-500"><input type="radio" name="payment-method" class="h-4 w-4 text-cyan-600" checked> <span class="ml-3 font-medium">Credit / Debit Card</span></label>
+                           <label class="flex items-center p-4 border rounded-lg has-[:checked]:bg-cyan-50 has-[:checked]:border-cyan-500"><input type="radio" name="payment-method" class="h-4 w-4 text-cyan-600"> <span class="ml-3 font-medium">UPI</span></label>
+                        </div>
+                        <button onclick="processPayment()" class="mt-6 w-full bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700">Pay Now</button>
+                    </div>
+                 </div>
+             </div>`;
+        
+        document.getElementById('confirmation-page').innerHTML = `
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="mx-auto bg-green-100 h-16 w-16 rounded-full flex items-center justify-center"><i data-lucide="check" class="h-10 w-10 text-green-600"></i></div>
+                <h2 class="text-2xl font-bold mt-6 mb-2 text-slate-900">Payment Successful!</h2>
+                <p id="delivery-time-message" class="text-slate-600 mb-6"></p>
+                <div class="bg-slate-50 p-4 rounded-lg"><p class="text-sm text-slate-500">Your Case Reference Number is:</p><p id="case-ref-number" class="text-2xl font-mono font-bold text-cyan-700 tracking-wider"></p></div>
+                 <div class="flex flex-col md:flex-row gap-4 justify-center mt-8">
+                    <button onclick="showPage('status-display-page')" class="bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700 w-full md:w-auto">Track Status</button>
+                    <button class="bg-slate-100 text-slate-800 font-bold py-3 px-6 rounded-lg hover:bg-slate-200 w-full md:w-auto">Download Invoice (PDF)</button>
+                </div>
+            </div>`;
+    }
+    
+    // --- CORE APP LOGIC ---
+    const pages = document.querySelectorAll('.page');
+    const homeButton = document.getElementById('home-button');
+    const mainHeader = document.getElementById('main-header');
+
+    function showPage(pageId, isBack = false) {
+        if (!isBack && appState.currentPage && appState.currentPage !== pageId) {
+            appState.pageHistory.push(appState.currentPage);
+        }
+        pages.forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        appState.currentPage = pageId;
+        mainHeader.classList.toggle('hidden', pageId !== 'landing-page');
+        homeButton.classList.toggle('hidden', pageId === 'landing-page');
+        window.scrollTo(0, 0);
+        lucide.createIcons();
+    }
+    
+    function goBack() {
+        if (appState.pageHistory.length > 0) {
+            const previousPageId = appState.pageHistory.pop();
+            showPage(previousPageId, true);
+        } else {
+            showPage('landing-page', true);
+        }
+    }
+
+    homeButton.addEventListener('click', () => {
+        appState.pageHistory = [];
+        showPage('landing-page');
+    });
+
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            button.nextElementSibling.classList.toggle('hidden');
+            button.classList.toggle('open');
+        });
+    });
+
+    function startJourney(journeyType) {
+        if (journeyType === 'legal') showPage('state-selection-page');
+    }
+
+    function handleStateSelection() {
+        const state = document.getElementById('state-dropdown').value;
+        if (!state) { alert('Please select a state to proceed.'); return; }
+        appState.selectedState = state;
+        appState.stateStatus = stateData[state];
+        showServiceSelection('legal');
+    }
+
+    function showServiceSelection(journeyType) {
+        const services = serviceData[journeyType];
+        const container = document.getElementById('service-list-container');
+        container.innerHTML = '';
+        const isDigital = appState.stateStatus === 'Digital';
+        document.getElementById('booking-subtitle').innerHTML = `Select services for <strong>${appState.selectedState}</strong>. ${isDigital ? '<br><span class="font-semibold text-green-600">Special 40% discount applied!</span>' : ''}`;
+
+        services.forEach((service) => {
+            if (service.variablePrice) {
+                let optionsHTML = '<option value="" data-price="0">-- Select Property Value --</option>';
+                service.options.forEach(opt => {
+                    optionsHTML += `<option value="${opt.price}" data-label="${opt.label}">${opt.label} - ₹${opt.price}</option>`;
+                });
+                container.insertAdjacentHTML('beforeend', `<div class="service-item p-4 border rounded-lg" data-service-name="${service.name}"><div class="flex justify-between items-center"><div><h4 class="font-semibold">${service.name}</h4><p class="text-sm text-slate-500">${service.description}</p></div><input type="checkbox" class="h-5 w-5 rounded text-cyan-600 service-checkbox-variable"></div><select class="mt-2 w-full input-field service-dropdown" disabled>${optionsHTML}</select></div>`);
+            } else {
+                let price = service.price;
+                let priceHTML = `<span class="font-semibold text-slate-700">₹${price}</span>`;
+                if (isDigital) {
+                    price = Math.round(service.price * 0.6); // 40% discount
+                    priceHTML = `<span class="font-semibold text-slate-700"><span class="line-through text-slate-400 mr-2">₹${service.price}</span>₹${price}</span>`;
+                }
+                container.insertAdjacentHTML('beforeend', `<div class="service-item flex justify-between items-center p-4 border rounded-lg" data-price="${price}" data-service-name="${service.name}"><div><h4 class="font-semibold">${service.name}</h4><p class="text-sm text-slate-500">${service.description}</p></div><div class="flex items-center gap-4">${priceHTML}<input type="checkbox" class="h-5 w-5 rounded text-cyan-600 service-checkbox-simple"></div></div>`);
+            }
+        });
+        
+        container.querySelectorAll('.service-checkbox-simple, .service-checkbox-variable, .service-dropdown').forEach(el => {
+            el.addEventListener('change', (e) => {
+                if (e.target.classList.contains('service-checkbox-variable')) {
+                    e.target.closest('.service-item').querySelector('.service-dropdown').disabled = !e.target.checked;
+                }
+                updateServiceSelection();
+            });
+        });
+        updateServiceSelection();
+        showPage('booking-page');
+    }
+    
+    function updateServiceSelection() {
+        let total = 0;
+        appState.selectedServices = [];
+        document.querySelectorAll('.service-checkbox-simple:checked').forEach(cb => {
+            const item = cb.closest('.service-item');
+            const price = parseInt(item.dataset.price, 10);
+            total += price;
+            appState.selectedServices.push({ name: item.dataset.serviceName, price: price, details: '' });
+        });
+        document.querySelectorAll('.service-checkbox-variable:checked').forEach(cb => {
+            const item = cb.closest('.service-item');
+            const dropdown = item.querySelector('.service-dropdown');
+            const price = parseInt(dropdown.value, 10) || 0;
+            const selectedOption = dropdown.options[dropdown.selectedIndex];
+            const label = selectedOption ? selectedOption.dataset.label : '';
+            total += price;
+            appState.selectedServices.push({ name: item.dataset.serviceName, price: price, details: label });
+        });
+        appState.totalPrice = total;
+        document.getElementById('total-price').textContent = `₹${total}`;
+        document.getElementById('proceed-to-details-btn').classList.toggle('hidden', total === 0);
+    }
+    
+    function proceedToDetails() {
+        if (appState.selectedServices.length === 0 || appState.totalPrice === 0) {
+            alert("Please select at least one service and specify any required options.");
+            return;
+        }
+        if (appState.stateStatus === 'Digital') {
+            document.getElementById('digital-state').value = appState.selectedState;
+            showPage('digital-details-page');
+        } else { // Non-Digital
+            const deedSelected = appState.selectedServices.some(s => s.name === 'Deed Execution');
+            const cersaiSelected = appState.selectedServices.some(s => s.name === 'CERSAI Report');
+            const aadhaarField = document.getElementById('aadhaar-field-container');
+            const panField = document.getElementById('pan-field-container');
+            aadhaarField.classList.add('hidden');
+            panField.classList.add('hidden');
+            if (cersaiSelected) {
+                aadhaarField.classList.remove('hidden');
+                panField.classList.remove('hidden');
+            } else if (deedSelected) {
+                aadhaarField.classList.remove('hidden');
+            }
+            document.getElementById('customer-info-section').classList.remove('hidden');
+            document.getElementById('document-upload-section').classList.remove('hidden');
+            const btn = document.getElementById('proceed-to-details-btn');
+            btn.textContent = "Proceed to Payment";
+            btn.setAttribute('onclick', 'validateAndPayNonDigital()');
+        }
+    }
+    
+    function validateAndPayNonDigital() {
+        if (validateForm('non-digital')) prepareAndGoToPayment();
+    }
+
+    function goToReview() {
+        if (validateForm('digital')) {
+            appState.customerDetails = {
+                state: document.getElementById('digital-state').value, mobile: document.getElementById('digital-mobile').value,
+                email: document.getElementById('digital-email').value, docNumber: document.getElementById('digital-doc-number').value,
+                docYear: document.getElementById('digital-doc-year').value, sro: document.getElementById('digital-sro').value,
+                village: document.getElementById('digital-village').value,
+            };
+            document.getElementById('review-content').innerHTML = `
+                <h4 class="font-semibold mb-2 border-b pb-1">Property & Contact Details</h4>
+                <div class="grid grid-cols-2 gap-2 text-sm"><strong>State:</strong> <span>${appState.customerDetails.state}</span><strong>Mobile:</strong> <span>${appState.customerDetails.mobile}</span><strong>Email:</strong> <span>${appState.customerDetails.email}</span><strong>Village:</strong> <span>${appState.customerDetails.village}</span><strong>Doc Number:</strong> <span>${appState.customerDetails.docNumber}</span><strong>Doc Year:</strong> <span>${appState.customerDetails.docYear}</span><strong>SRO Office:</strong> <span>${appState.customerDetails.sro}</span></div>`;
+            let servicesHTML = `<h4 class="font-semibold mb-2 border-b pb-1">Selected Services</h4><ul class="list-disc list-inside text-sm">`;
+            appState.selectedServices.forEach(s => { servicesHTML += `<li>${s.name} ${s.details ? `(${s.details})` : ''} - ₹${s.price}</li>`; });
+            servicesHTML += `</ul>`;
+            document.getElementById('review-services').innerHTML = servicesHTML;
+            showPage('review-details-page');
+        }
+    }
+    
+    function goToPaymentFromReview() {
+        prepareAndGoToPayment();
+    }
+    
+    function validateForm(type) {
+        let isValid = true;
+        let fields = [];
+        if (type === 'digital') {
+            fields = [
+                { id: 'digital-mobile', regex: /^\d{10}$/, msg: 'Enter a valid 10-digit mobile number.' }, { id: 'digital-email', regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, msg: 'Enter a valid email address.' },
+                { id: 'digital-doc-number', regex: /.+/, msg: 'Document number is required.' }, { id: 'digital-doc-year', regex: /^\d{4}$/, msg: 'Enter a valid 4-digit year.' },
+                { id: 'digital-sro', regex: /.+/, msg: 'SRO name is required.' }, { id: 'digital-village', regex: /.+/, msg: 'Village name is required.' }
+            ];
+        } else { // Non-Digital
+            fields = [
+                { id: 'full-name', regex: /.+/, msg: 'Full name is required.' }, { id: 'auth-mobile-number', regex: /^\d{10}$/, msg: 'Enter a valid 10-digit mobile number.' },
+                { id: 'address', regex: /.+/, msg: 'Address is required.' }, { id: 'pincode', regex: /^\d{6}$/, msg: 'Enter a valid 6-digit pincode.' }
+            ];
+            if (!document.getElementById('aadhaar-field-container').classList.contains('hidden')) {
+                fields.push({ id: 'aadhaar-number', regex: /^\d{12}$/, msg: 'Enter a valid 12-digit Aadhaar number.' });
+            }
+            if (!document.getElementById('pan-field-container').classList.contains('hidden')) {
+                fields.push({ id: 'pan-card', regex: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, msg: 'Enter a valid PAN format.' });
+            }
+        }
+        fields.forEach(field => {
+            const input = document.getElementById(field.id);
+            const errorMsg = input.parentElement.querySelector('.error-msg');
+            if (errorMsg) {
+                 errorMsg.classList.add('text-red-600', 'text-xs', 'mt-1');
+                if (!field.regex.test(input.value)) { isValid = false; input.classList.add('border-red-500'); errorMsg.textContent = field.msg; } 
+                else { input.classList.remove('border-red-500'); errorMsg.textContent = ''; }
+            }
+        });
+        return isValid;
+    }
+
+    function prepareAndGoToPayment() {
+        const summaryList = document.getElementById('order-summary-list');
+        summaryList.innerHTML = '';
+        appState.selectedServices.forEach(service => {
+            const detailText = service.details ? ` <span class="text-xs text-slate-500">(${service.details})</span>` : '';
+            summaryList.insertAdjacentHTML('beforeend', `<div class="flex justify-between"><span>${service.name}${detailText}</span><span>₹${service.price}</span></div>`);
+        });
+        const subtotal = appState.totalPrice;
+        const gst = subtotal * 0.18;
+        const total = subtotal + gst;
+        document.getElementById('summary-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+        document.getElementById('summary-gst').textContent = `₹${gst.toFixed(2)}`;
+        document.getElementById('summary-total').textContent = `₹${total.toFixed(2)}`;
+        showPage('payment-page');
+    }
+
+    function processPayment() {
+        document.getElementById('loading-overlay').classList.remove('hidden');
+        setTimeout(() => {
+            const messageEl = document.getElementById('delivery-time-message');
+            if (appState.stateStatus === 'Digital') {
+                messageEl.textContent = 'Your report will be sent on your email within 24 hours.';
+            } else {
+                messageEl.textContent = 'Your report will be sent on your email within 48-72 hours.';
+            }
+            appState.caseRef = `GFGC-${Math.floor(10000000 + Math.random() * 90000000)}`;
+            document.getElementById('case-ref-number').textContent = appState.caseRef;
+            showPage('confirmation-page');
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }, 2000);
+    }
+    
+    function displayUploadedFiles(input) {
+        const fileListDiv = document.getElementById('file-list');
+        fileListDiv.innerHTML = '';
+        for (const file of input.files) { fileListDiv.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-100 p-2 rounded-md text-sm"><span class="truncate">${file.name}</span><span class="text-slate-500">${(file.size / 1024 / 1024).toFixed(2)} MB</span></div>`); }
+    }
+    document.head.insertAdjacentHTML('beforeend', `<style>
+        .input-field { display: block; width: 100%; border-radius: 0.375rem; border: 1px solid #cbd5e1; padding: 0.5rem 0.75rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+        .input-field:focus { outline: 2px solid transparent; outline-offset: 2px; --tw-ring-color: #0891b2; box-shadow: 0 0 0 1px var(--tw-ring-color); border-color: #0891b2; }
+        .error-msg { height: 1rem; }
+    </style>`);
+
+    window.onload = () => {
+        populatePages();
+        // The following pages are not part of the initial flow but need their content for when they are called.
+        // This is a simplified approach for a single-file demo.
+        document.getElementById('status-inquiry-page').innerHTML = `<div class="bg-white p-8 rounded-xl shadow-md"><h2 class="text-2xl font-bold mb-2">Check Application Status</h2></div>`;
+        document.getElementById('status-display-page').innerHTML = `<div class="bg-white p-8 rounded-xl shadow-md"><h2 class="text-2xl font-bold mb-2">Application Status</h2></div>`;
+        document.getElementById('auth-page').innerHTML = `<div class="bg-white p-8 rounded-xl shadow-md"><h2 class="text-2xl font-bold mb-2">Authentication</h2></div>`;
+        showPage('landing-page');
+    };
+</script>
+</body>
+</html>
